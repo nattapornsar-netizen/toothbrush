@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>หลังร้าน — หยิบ แพ็ค จ่าหน้า</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar no-print"><b>📦 หลังร้าน ร้านแปรงดี</b><a href="index.html">กลับหน้าร้าน</a></header>
+
+<section class="no-print">
+  <h2>1) ใบหยิบสินค้า — ออเดอร์ที่ยังไม่แพ็ค</h2>
+  <table id="pick"></table>
+  <h2>2) รายการออเดอร์</h2>
+  <button class="btn" onclick="load()">🔄 รีเฟรช</button>
+  <table id="orders"></table>
+</section>
+
+<div id="label" class="label"></div>
+
+<script src="config.js"></script>
+<script>
+const SENDER = { name: "ร้านแปรงดี", addr: "มหาวิทยาลัยศรีปทุม 2410/2 ถ.พหลโยธิน จตุจักร กรุงเทพฯ 10900", phone: "02-000-0000" };
+let orders = [];
+
+async function load() {
+  if (!SCRIPT_URL.startsWith("http")) { document.getElementById("orders").innerHTML = "<tr><td>ยังไม่ได้ใส่ SCRIPT_URL ใน config.js</td></tr>"; return; }
+  orders = await (await fetch(SCRIPT_URL + "?action=orders")).json();
+  render();
+}
+function render() {
+  // Pick list: รวมจำนวนต่อ SKU จากออเดอร์ที่ยังไม่แพ็ค
+  const pick = {};
+  orders.filter(o => o.status !== "แพ็คแล้ว").forEach(o =>
+    o.items.forEach(i => { pick[i.sku] = pick[i.sku] || { name: i.name, qty: 0 }; pick[i.sku].qty += i.qty; }));
+  document.getElementById("pick").innerHTML = "<tr><th>รหัสสินค้า</th><th>สินค้า</th><th>จำนวนที่ต้องหยิบ</th></tr>" +
+    (Object.entries(pick).map(([s, p]) => `<tr><td>${s}</td><td>${p.name}</td><td><b>${p.qty}</b></td></tr>`).join("") || "<tr><td colspan=3>ไม่มีของค้างแพ็ค 🎉</td></tr>");
+
+  document.getElementById("orders").innerHTML = "<tr><th>เลขออเดอร์</th><th>ลูกค้า</th><th>สินค้า</th><th>ยอด</th><th>สถานะ</th><th></th></tr>" +
+    orders.map((o, i) => `<tr>
+      <td>${o.orderId}</td><td>${o.name}<br><small>${o.phone}</small></td>
+      <td>${o.items.map(x => `${x.sku} × ${x.qty}`).join("<br>")}</td>
+      <td>฿${o.total}</td>
+      <td><span class="tag ${o.status === "แพ็คแล้ว" ? "done" : ""}">${o.status}</span></td>
+      <td><button onclick="pack(${i})">✅ ตรวจแพ็ค</button> <button onclick="printLabel(${i})">🖨️ ใบจ่าหน้า</button></td>
+    </tr>`).join("");
+}
+async function pack(i) {
+  const o = orders[i];
+  const list = o.items.map(x => `☐ ${x.sku} ${x.name} × ${x.qty}`).join("\n");
+  if (!confirm(`ตรวจสินค้าก่อนแพ็ค ${o.orderId}\n\n${list}\n\nหยิบครบถูกต้องแล้ว?`)) return;
+  await api({ action: "status", orderId: o.orderId, status: "แพ็คแล้ว" });
+  o.status = "แพ็คแล้ว"; render(); printLabel(i);
+}
+function printLabel(i) {
+  const o = orders[i];
+  document.getElementById("label").innerHTML = `
+    <div class="lb-head"><b>ใบจ่าหน้าพัสดุ</b><span>${o.orderId}</span></div>
+    <div class="lb-box"><small>ผู้ส่ง</small><br>${SENDER.name}<br>${SENDER.addr}<br>โทร ${SENDER.phone}</div>
+    <div class="lb-box big"><small>ผู้รับ</small><br><b>${o.name}</b><br>${o.address}<br>จ.${o.province} <b class="zip">${o.zip}</b><br>โทร ${o.phone}</div>
+    <div class="lb-box"><small>รายการในกล่อง</small><br>${o.items.map(x => `${x.sku} ${x.name} × ${x.qty}`).join("<br>")}</div>
+    <div class="barcode">${o.orderId}</div>`;
+  window.print();
+}
+load();
+</script>
+</body>
+</html>

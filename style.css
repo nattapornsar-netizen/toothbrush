@@ -1,0 +1,22 @@
+*{box-sizing:border-box}body{margin:0;font-family:"Sarabun","Prompt",sans-serif;background:#f4f9fc;color:#1d2b36}
+a{color:inherit}.btn{background:#1e6fa8;color:#fff;border:0;padding:10px 18px;border-radius:999px;cursor:pointer;text-decoration:none;display:inline-block;font-size:15px}
+.hero{background:linear-gradient(135deg,#1e6fa8,#7cc4e8);color:#fff;padding:20px 24px 60px;text-align:center}
+.hero nav,.bar{display:flex;justify-content:space-between;align-items:center}.hero h1{font-size:40px;margin:50px 0 8px}.hero .btn{background:#fff;color:#1e6fa8}
+.bar{background:#1e6fa8;color:#fff;padding:14px 24px}
+section{max-width:960px;margin:auto;padding:30px 20px}h2{color:#1e6fa8}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 4px 14px #0001;text-align:center}.card img{width:100%;border-radius:12px}
+.card small{color:#888}.card h3{margin:6px 0}.card b{display:block;font-size:22px;margin:8px 0;color:#e0457b}
+.row{display:flex;justify-content:space-between;background:#fff;padding:10px 14px;border-radius:10px;margin-bottom:6px}.total{font-weight:700}
+form{display:grid;gap:10px;margin-top:16px}input,textarea{padding:10px;border:1px solid #cdd;border-radius:10px;font:inherit}
+table{width:100%;border-collapse:collapse;background:#fff;margin:10px 0}th,td{border:1px solid #dde;padding:8px;text-align:left;vertical-align:top}th{background:#e8f3fa}
+.tag{padding:2px 10px;border-radius:999px;background:#ffe8a3}.tag.done{background:#bdf0c9}
+footer{text-align:center;padding:20px;color:#888}
+.label{display:none}
+@media print{
+  .no-print{display:none!important}body{background:#fff}
+  .label{display:block;width:100mm;border:2px solid #000;padding:4mm;font-size:12px}
+  .lb-head{display:flex;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:2mm;font-size:14px}
+  .lb-box{border-bottom:1px dashed #000;padding:2mm 0}.lb-box.big{font-size:15px}.zip{font-size:22px;letter-spacing:3px}
+  .barcode{font-family:monospace;font-size:20px;text-align:center;padding-top:3mm;letter-spacing:4px}
+}
